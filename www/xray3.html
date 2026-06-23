@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Digital Chest X Ray· Health Station</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg:#f0f5f8; --surface:#fff; --surface-2:#b5f2fd;
+            --border:#d6e2ea; --border-soft:#e4edf2;
+            --text:#1a3040; --text-2:#4d6878; --text-3:#7a98a8;
+            --primary:#1582ab; --primary-d:#10688a; --primary-l:#e8f5fb;
+            --green:#2e7d32; --green-l:#e8f5e9; --green-b:#a5d6a7;
+            --red:#28c6ac; --red-l:#ebfeff; --red-b:#9aefa8;
+            --danger:#c62828; --danger-l:#ffebee; --danger-b:#ef9a9a;
+            --r:12px; --r-sm:8px; --fh:40px;
+            --shadow:0 1px 3px rgba(0,30,50,.08),0 4px 12px rgba(0,30,50,.06);
+        }
+        html,body{height:100%}
+        body{font-family:'Sarabun',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-y:scroll}
+
+        /* Topbar */
+        .topbar{position:sticky;top:0;z-index:100;height:54px;display:flex;align-items:center;gap:12px;padding:0 28px;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 1px 4px rgba(0,30,50,.06)}
+        .icon-btn{width:36px;height:36px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:18px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s,background .15s}
+        .icon-btn:hover{background:var(--primary-l);border-color:var(--primary);color:var(--primary)}
+        .icon-btn.logout:hover{background:var(--red-l);border-color:var(--red-b);color:var(--red)}
+        .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text);text-decoration:none}
+        .brand-mark{width:30px;height:30px;border-radius:9px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0}
+        .topbar-date{font-size:13px;color:var(--text-3);padding-right:12px;border-right:1px solid var(--border-soft)}
+        .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+        /* Shell */
+        .shell{max-width:1080px;margin:0 auto;padding:22px 28px;display:flex;flex-direction:column;gap:14px}
+
+        /* Page head */
+        .pagehead{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+        .page-icon{width:44px;height:44px;border-radius:13px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;flex-shrink:0;box-shadow:0 4px 12px rgba(21,130,171,.28)}
+        .page-title h1{font-size:20px;font-weight:600}
+        .page-title p{font-size:12px;color:var(--text-3);margin-top:2px}
+
+        /* Search bar */
+        .search-wrap{margin-left:auto;display:flex;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
+        .search-wrap .s-icon{display:flex;align-items:center;padding:0 12px;color:var(--text-3);font-size:18px;flex-shrink:0}
+        .search-wrap input{border:none;outline:none;background:transparent;font-family:inherit;font-size:14px;color:var(--text);width:220px;padding:0}
+        .search-wrap input::placeholder{color:var(--text-3)}
+        .search-wrap .s-btn{display:flex;align-items:center;gap:6px;padding:0 18px;height:var(--fh);background:var(--primary);color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s}
+        .search-wrap .s-btn:hover{background:var(--primary-d)}
+
+        /* Patient card */
+        .pt-card{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
+        .pt-card.ready{border-color:#43a047;box-shadow:0 0 0 3px rgba(67,160,71,.1),var(--shadow)}
+        .pt-av{width:46px;height:46px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:600;flex-shrink:0}
+        .pt-info h2{font-size:15px;font-weight:600}
+        .pt-info p{font-size:12px;color:var(--text-2);margin-top:3px}
+        .pt-fields{display:flex;gap:0;margin-left:auto;flex-wrap:wrap}
+        .pt-f{padding:0 18px;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--border-soft)}
+        .pt-f:first-child{padding-left:0}
+        .pt-f:last-child{border-right:none;padding-right:0}
+        .pt-fl{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);font-weight:500}
+        .pt-fv{font-size:13.5px;font-weight:600;color:var(--text)}
+        .pt-fv.hn{color:var(--primary);font-size:13px}
+        .badge-green{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--green-l);color:var(--green);border:1px solid var(--green-b)}
+
+        /* Section */
+        .sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+        .sec-head{display:flex;align-items:center;gap:10px;padding:11px 20px;background:var(--surface-2);border-bottom:1px solid var(--border-soft)}
+        .sec-bar{width:3px;height:20px;border-radius:3px;background:var(--primary);flex-shrink:0}
+        .sec-head i{font-size:17px;color:var(--primary)}
+        .sec-head h2{font-size:14.5px;font-weight:600}
+        .sec-head h2 span{font-size:12px;font-weight:400;color:var(--text-3);margin-left:4px}
+        .sec-actions{margin-left:auto;display:inline-flex;align-items:center;gap:8px}
+        .pending-count{font-size:12px;font-weight:600;background:var(--primary);color:#fff;border-radius:12px;padding:2px 9px;display:none}
+        .sec-body{padding:18px 20px}
+
+        /* Table */
+        .table-container{max-height:300px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:10px}
+        .table-container::-webkit-scrollbar{width:6px}
+        .table-container::-webkit-scrollbar-track{background:#f5f5f5;border-radius:10px}
+        .table-container::-webkit-scrollbar-thumb{background:#ccc;border-radius:10px}
+        .table-container::-webkit-scrollbar-thumb:hover{background:#aaa}
+        .sticky-table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+        .sticky-table thead th{position:sticky;top:0;z-index:1;background:#f7f8fa;color:#444;font-weight:600;padding:12px 16px;text-align:left;border-bottom:1px solid #e0e0e0;white-space:nowrap}
+        .sticky-table thead th:first-child{border-radius:10px 0 0 0}
+        .sticky-table thead th:last-child{border-radius:0 10px 0 0}
+        .sticky-table tbody tr td{padding:10px 16px;color:#333;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+        .sticky-table tbody tr:last-child td{border-bottom:none}
+        .sticky-table tbody tr:hover td{background:#f9fafb}
+        .tbl-empty{text-align:center;color:var(--text-3);padding:28px 0 !important;font-size:13px}
+        .btn-del{width:28px;height:28px;border-radius:6px;border:1px solid var(--danger-b);background:var(--danger-l);color:var(--danger);font-size:15px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+        .btn-del:hover{background:#ffd7d7}
+
+        /* Actions bar */
+        .actions-bar{display:flex;align-items:center;justify-content:flex-start;gap:10px}
+        .conn-status{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-2)}
+        .conn-dot{width:8px;height:8px;border-radius:50%;background:#43a047;flex-shrink:0}
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <button class="icon-btn" aria-label="เมนู"><i class="ti ti-menu-2"></i></button>
+    <a href="#" class="brand">
+        <div class="brand-mark"><i class="ti ti-activity-heartbeat"></i></div>
+        Health Station
+    </a>
+    <div class="topbar-right">
+        <span class="topbar-date">
+            <i class="ti ti-calendar" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+            <span id="today-date"></span>
+        </span>
+        <button class="icon-btn logout" aria-label="ออกจากระบบ" onclick="confirmLogout()">
+            <i class="ti ti-logout"></i>
+        </button>
+    </div>
+</header>
+
+<main class="shell">
+
+    <!-- Page header -->
+    <div class="pagehead">
+        <div class="page-icon"><i class="ti ti-clipboard-list"></i></div>
+        <div class="page-title">
+            <h1>เอ็กซเรย์ทรวงอก</h1>
+            <p>Digital Chest X-Ray</p>
+        </div>
+        <!-- Search bar: scanner พิมพ์ลงช่องนี้ → กดปุ่ม Enter เพื่อเพิ่มคิว -->
+        <div class="search-wrap">
+            <span class="s-icon"><i class="ti ti-barcode"></i></span>
+            <input id="searchid" type="text" placeholder="สแกนบาร์โค้ด…" autocomplete="off" />
+            <button class="s-btn" onclick="onEnterBtn()">
+                <i class="ti ti-corner-down-left"></i> Enter
+            </button>
+        </div>
+    </div>
+
+    <!-- Patient card -->
+    <div class="pt-card" id="pt-card">
+        <div class="pt-av" id="pt-av">—</div>
+        <div class="pt-info">
+            <h2 id="fullname" style="color:#7a98a8;font-weight:400">ค้นหาผู้รับการตรวจ</h2>
+            <p id="pt-sub">สแกนบาร์โค้ดเพื่อดึงข้อมูล</p>
+        </div>
+        <div class="pt-fields">
+            <div class="pt-f">
+                <span class="pt-fl">รหัสลงทะเบียน</span>
+                <span class="pt-fv hn" id="Rn">—</span>
+            </div>
+            <div class="pt-f">
+                <span class="pt-fl">วันที่ตรวจ</span>
+                <span class="pt-fv" id="exam-date">—</span>
+            </div>
+        </div>
+        <span class="badge-green" id="pt-badge" style="display:none">
+            <i class="ti ti-circle-check" style="font-size:14px"></i> พบผู้รับการตรวจ
+        </span>
+    </div>
+
+    <!-- Queue section -->
+    <section class="sec">
+        <div class="sec-head">
+            <span class="sec-bar"></span>
+            <i class="ti ti-ear"></i>
+            <h2>การได้ยิน <span>Audiogram</span></h2>
+            <div class="sec-actions">
+                <span class="pending-count" id="pending-count"></span>
+                <!-- Clear -->
+                <svg onclick="clearForm()" title="ล้างข้อมูล" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#9bbdcc" viewBox="0 0 16 16" style="cursor:pointer;flex-shrink:0">
+                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708"/>
+                </svg>
+                <!-- Save -->
+                <svg onclick="saveToSheet()" title="บันทึกลง Google Sheet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10688a" viewBox="0 0 16 16" style="cursor:pointer;flex-shrink:0">
+                    <path d="M12 2h-2v3h2z"/>
+                    <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v13A1.5 1.5 0 0 0 1.5 16h13a1.5 1.5 0 0 0 1.5-1.5V2.914a1.5 1.5 0 0 0-.44-1.06L14.147.439A1.5 1.5 0 0 0 13.086 0zM4 6a1 1 0 0 1-1-1V1h10v4a1 1 0 0 1-1 1zM3 9h10a1 1 0 0 1 1 1v5H2v-5a1 1 0 0 1 1-1"/>
+                </svg>
+            </div>
+        </div>
+        <div class="sec-body">
+            <div class="table-container">
+                <table class="sticky-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px">ลำดับ</th>
+                            <th style="width:110px">HN</th>
+                            <th>ชื่อ นามสกุล</th>
+                            <th style="width:170px">บันทึกเวลา</th>
+                            <th style="width:54px;text-align:center">#</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queue-tbody">
+                        <tr><td colspan="5" class="tbl-empty">ยังไม่มีรายการ</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status bar -->
+    <div class="actions-bar">
+        <div class="conn-status">
+            <span class="conn-dot"></span>
+            เชื่อมต่อฐานข้อมูล · บันทึกล่าสุด <span id="last-save">—</span>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwl-ZZnObjOjBDp2OKiGqGIAxKQPiR3fjFefyVu6OsMslKcXW2f47MrGgNqrlksWt81/exec";
+
+    // ── State ──────────────────────────────────────────────────
+    let queue      = [];
+    let seqCounter = 1;
+    let pendingHN  = "";
+    let pendingName = "";
+
+    // ── Clock ──────────────────────────────────────────────────
+    function nowThai() {
+        const d = new Date(), p = n => String(n).padStart(2,"0");
+        return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} , ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+    function updateClock(){ document.getElementById("today-date").textContent = nowThai(); }
+    updateClock(); setInterval(updateClock, 30000);
+
+    // ── Barcode scanner ────────────────────────────────────────
+    // Scanner พิมพ์เข้า searchid แล้วส่ง Enter อัตโนมัติ
+    // → ครบ 8 หลัก = ค้นหาทันที (ไม่รอกด Enter)
+    // กด Enter จาก scanner → ถ้ามีค่า 8 หลักใน input → ค้นหา
+
+    const SCAN_TIMEOUT = 150; // ms หลังหยุดพิมพ์ → trigger อัตโนมัติ
+    let scanTimer = null;
+    const $input = document.getElementById("searchid");
+
+    // redirect keypress นอก input เข้า searchid
+    document.addEventListener("keydown", e => {
+        const inInput = ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName);
+        if (!inInput && e.key.length === 1) {
+            $input.focus();
+            // browser จะพิมพ์ตัวนั้นลง input เอง
+        }
+    });
+
+    // จัดการ input ใน searchid
+    $input.addEventListener("input", () => {
+        clearTimeout(scanTimer);
+        const val = $input.value.trim();
+        if (val.length === 8) {
+            // ครบ 8 หลัก → ค้นหาทันที ไม่ต้องรอ
+            doSearch(val);
+        } else if (val.length > 8) {
+            // เกิน → ล้างแล้วรอใหม่
+            $input.value = "";
+        } else {
+            // ยังไม่ครบ → รอ timer
+            scanTimer = setTimeout(() => {
+                if ($input.value.trim().length === 8) doSearch($input.value.trim());
+            }, SCAN_TIMEOUT);
+        }
+    });
+
+    // Enter จาก scanner (ส่งหลังพิมพ์ครบ)
+    $input.addEventListener("keydown", e => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        clearTimeout(scanTimer);
+        const val = $input.value.trim();
+        if (val.length === 8) doSearch(val);
+    });
+
+    // ── ค้นหา HN (เรียกอัตโนมัติหลังสแกน) ────────────────────
+    async function doSearch(raw) {
+        $input.value = "";
+        const hn = raw.substring(2); // ตัด 2 หลักแรก → 6 หลัก
+        try {
+            showLoading("กำลังค้นหา...");
+            const res = await fetch(`${APPS_SCRIPT_URL}?action=search&hn=${encodeURIComponent(hn)}`);
+            const data = await res.json();
+            Swal.close();
+
+            if (data.status !== "found") {
+                Swal.fire({icon:"error", title:"ไม่พบข้อมูล", text:`ไม่มี HN "${hn}" นี้ในระบบ`, confirmButtonColor:"#d33"});
+                clearPatientCard();
+                return;
+            }
+
+            pendingHN   = data.hn;
+            pendingName = data.fullname;
+            showPatientCard(data.hn, data.fullname);
+
+        } catch(err) {
+            Swal.fire({icon:"error", title:"เกิดข้อผิดพลาด", text:err.message||"ไม่สามารถติดต่อ server ได้", confirmButtonColor:"#d33"});
+        }
+    }
+
+    // ── กดปุ่ม "Enter" → เพิ่มลงคิว ──────────────────────────
+    function onEnterBtn() {
+        // ถ้า input มีค่า → search ก่อน
+        const val = $input.value.trim();
+        if (val.length === 8) { doSearch(val); return; }
+
+        // ถ้ามี pending → เพิ่มคิว
+        if (pendingHN) { addToQueue(); return; }
+
+        showWarning("กรุณาสแกนบาร์โค้ดก่อน");
+    }
+
+    // ── เพิ่มลงตาราง pending ───────────────────────────────────
+    function addToQueue() {
+        if (!pendingHN) return;
+        if (queue.find(r => r.hn === pendingHN)) {
+            showWarning(`HN ${pendingHN} มีในรายการแล้ว`);
+            clearPatientCard(); pendingHN = ""; pendingName = "";
+            return;
+        }
+        queue.push({ seq: seqCounter++, hn: pendingHN, fullname: pendingName, datetime: nowThai() });
+        pendingHN = ""; pendingName = "";
+        clearPatientCard();
+        renderQueue();
+    }
+
+    // ── Patient card ───────────────────────────────────────────
+    function showPatientCard(hn, fullname) {
+        document.getElementById("pt-card").classList.add("ready");
+        document.getElementById("Rn").textContent       = hn;
+        document.getElementById("fullname").textContent = fullname;
+        document.getElementById("fullname").style.cssText = "font-weight:600";
+        document.getElementById("pt-sub").textContent   = "พบข้อมูล — กดปุ่ม Enter เพื่อเพิ่มในคิว";
+        document.getElementById("exam-date").textContent = nowThai();
+        document.getElementById("pt-av").textContent    = fullname.trim().charAt(0) || "?";
+        document.getElementById("pt-badge").style.display = "";
+    }
+
+    function clearPatientCard() {
+        document.getElementById("pt-card").classList.remove("ready");
+        document.getElementById("Rn").textContent       = "—";
+        document.getElementById("fullname").textContent = "ค้นหาผู้รับการตรวจ";
+        document.getElementById("fullname").style.cssText = "color:#7a98a8;font-weight:400";
+        document.getElementById("pt-sub").textContent   = "สแกนบาร์โค้ดเพื่อดึงข้อมูล";
+        document.getElementById("exam-date").textContent = "—";
+        document.getElementById("pt-av").textContent    = "—";
+        document.getElementById("pt-badge").style.display = "none";
+    }
+
+    function clearForm() {
+        if (queue.length === 0 && !pendingHN) return;
+        Swal.fire({
+            icon:"warning", title:"ล้างข้อมูลทั้งหมด?",
+            text: queue.length ? `จะลบ ${queue.length} รายการที่ยังไม่ได้บันทึก` : "ล้างข้อมูลผู้ตรวจ",
+            showCancelButton:true, confirmButtonText:"ล้าง", cancelButtonText:"ยกเลิก",
+            confirmButtonColor:"#c62828"
+        }).then(r => {
+            if (r.isConfirmed) {
+                queue = []; seqCounter = 1;
+                pendingHN = ""; pendingName = "";
+                clearPatientCard(); renderQueue();
+            }
+        });
+    }
+
+    // ── Render table ───────────────────────────────────────────
+    function renderQueue() {
+        const tbody = document.getElementById("queue-tbody");
+        const badge = document.getElementById("pending-count");
+        if (queue.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="tbl-empty">ยังไม่มีรายการ</td></tr>';
+            badge.style.display = "none";
+            return;
+        }
+        badge.textContent = queue.length;
+        badge.style.display = "";
+
+        tbody.innerHTML = queue.map((r, i) => [
+            '<tr>',
+            '<td>' + (i + 1) + '</td>',
+            '<td style="font-family:monospace;color:var(--primary)">' + r.hn + '</td>',
+            '<td>' + r.fullname + '</td>',
+            '<td style="font-size:13px;color:var(--text-2)">' + r.datetime + '</td>',
+            '<td style="text-align:center"><button class="btn-del" data-idx="' + i + '" title="ลบ"><i class="ti ti-trash" style="font-size:14px"></i></button></td>',
+            '</tr>'
+        ].join("")).join("");
+
+        // ผูก event หลัง render เสร็จ ไม่ใช้ onclick inline
+        tbody.querySelectorAll(".btn-del").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                var idx = parseInt(btn.dataset.idx);
+                queue.splice(idx, 1);
+                seqCounter = queue.length + 1;
+                renderQueue();
+            });
+        });
+    }
+
+    // ── Save ───────────────────────────────────────────────────
+    async function saveToSheet() {
+        if (!queue.length) { showWarning("ไม่มีรายการในคิว"); return; }
+        const cf = await Swal.fire({
+            icon:"question", title:"ยืนยันการบันทึก?",
+            text:`บันทึก ${queue.length} รายการลง Google Sheet`,
+            showCancelButton:true, confirmButtonText:"บันทึก", cancelButtonText:"ยกเลิก",
+            confirmButtonColor:"#1582ab"
+        });
+        if (!cf.isConfirmed) return;
+        showLoading("กำลังบันทึก...");
+        try {
+            const res  = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({action: 'saveXray', rows: queue})
+            });
+            const data = await res.json();
+            if (data.status === "ok" || data.success) {
+                document.getElementById("last-save").textContent = nowThai();
+                showSuccess("บันทึกสำเร็จ", `${data.saved} รายการถูกบันทึกลง Google Sheet`);
+                queue = []; seqCounter = 1; renderQueue(); clearPatientCard();
+            } else { showError(data.message || "บันทึกไม่สำเร็จ"); }
+        } catch(err) { showError(err.message || "ไม่สามารถติดต่อ server ได้"); }
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+    function showLoading(t="กำลังดำเนินการ..."){ Swal.fire({title:t,allowOutsideClick:false,didOpen:()=>Swal.showLoading()}); }
+    function showSuccess(t,tx){ Swal.fire({icon:"success",title:t,html:`<b>${tx}</b>`,timer:2500,timerProgressBar:true,showConfirmButton:false}); }
+    function showError(t){ Swal.fire({icon:"error",title:"เกิดข้อผิดพลาด",text:t}); }
+    function showWarning(t){ Swal.fire({icon:"warning",title:"แจ้งเตือน",text:t}); }
+    function confirmLogout(){
+        Swal.fire({icon:"question",title:"ออกจากระบบ?",text:"ข้อมูลที่ยังไม่ได้บันทึกจะหายไป",showCancelButton:true,confirmButtonText:"ออกจากระบบ",cancelButtonText:"ยกเลิก",confirmButtonColor:"#c62828"})
+        .then(r=>{ if(r.isConfirmed) window.location.href="index3.html"; });
+    }
+</script>
+</body>
+</html>
