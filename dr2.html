@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ตรวจร่างกายทั่วไปโดยแพทย์</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg: #eef6fb;
+            --card: #fff;
+            --line: #dbeaf2;
+            --line-soft: #eaf3f8;
+            --text: #15323f;
+            --muted: #5d7886;
+            --muted-2: #84a0ad;
+            --primary: #1c97c2;
+            --primary-d: #1582ab;
+            --primary-l: #eaf6fb;
+            --accent: #2bb6c4;
+            --field-bg: #f5fafd;
+            --shadow: 0 10px 30px rgba(21, 50, 63, .09);
+            --shadow-sm: 0 4px 12px rgba(21, 50, 63, .06);
+            --r: 14px;
+            --r-sm: 10px;
+            --fh: 44px;
+            /* field height */
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+              height: 100%;
+          overflow-y: scroll;
+        }
+
+        body {
+            font-family: "Kanit", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1000px 460px at 12% -8%, #d7ecf7, transparent 60%),
+                radial-gradient(1000px 480px at 100% 0%, #def0f8, transparent 55%),
+                var(--bg);
+        }
+
+        .input-group-text {
+            color: #1582ab;
+        }
+
+        /* ─── App locks to viewport, no page scroll ─── */
+        .ex-app {
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* navbar */
+        .ex-app .navbar {
+            flex: 0 0 auto;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 clamp(16px, 3vw, 28px);
+            background: rgba(255, 255, 255, .88);
+            backdrop-filter: saturate(140%) blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .ex-app .nav-toggle {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            background: var(--primary-l);
+            font-size: 17px;
+            transition: .15s;
+        }
+
+        .ex-app .nav-toggle:hover {
+            background: #dcf0f8;
+        }
+
+        .ex-app .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .ex-app .logout {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 14.5px;
+            transition: .15s;
+        }
+
+        .ex-app .logout:hover {
+            background: var(--primary-l);
+            color: var(--primary-d);
+        }
+
+        /* shell */
+        .ex-app .shell {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: clamp(12px, 1.8vh, 20px) clamp(14px, 3vw, 28px) clamp(12px, 1.8vh, 20px);
+        }
+
+        /* page head */
+        .ex-app .pagehead {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: clamp(10px, 1.6vh, 16px);
+        }
+
+        .ex-app .titlewrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .ex-app .ticon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 19px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 7px 16px rgba(28, 151, 194, .30);
+        }
+
+        .ex-app .pagehead h1 {
+            margin: 0;
+            font-size: clamp(18px, 2.2vw, 26px);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: .2px;
+        }
+
+        .ex-app .pagehead .sub {
+            margin: 1px 0 0;
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .ex-app .search {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex: 1 1 340px;
+            max-width: 540px;
+            justify-content: flex-end;
+        }
+
+        .ex-app .inwrap {
+            position: relative;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .ex-app .inwrap i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-2);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .ex-app .search input {
+            width: 100%;
+            height: var(--fh);
+            padding: 0 12px 0 36px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: .15s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ex-app .search input::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app .search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        .ex-app .btn {
+            height: var(--fh);
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 14.5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .ex-app .btn.primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            box-shadow: 0 8px 18px rgba(28, 151, 194, .26);
+        }
+
+        .ex-app .btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(28, 151, 194, .32);
+        }
+
+        .ex-app .btn.icon {
+            width: var(--fh);
+            padding: 0;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .ex-app .btn.ghost {
+            background: #fff;
+            border-color: var(--line);
+            color: var(--text);
+        }
+
+        .ex-app .btn.ghost:hover {
+            background: var(--primary-l);
+            border-color: var(--primary);
+            color: var(--primary-d);
+        }
+
+        /* ─── form fills remaining height ─── */
+        .ex-app #examForm {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            gap: clamp(12px, 1.4vw, 18px);
+            overflow: hidden;
+        }
+
+        .ex-app .col {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(12px, 1.4vh, 16px);
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .ex-app .col-left {
+            flex: 1.12;
+        }
+
+        .ex-app .col-right {
+            flex: 1;
+        }
+
+        /* card */
+        .ex-app .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .ex-app .card.fill {
+            flex: 1;
+        }
+
+        .ex-app .card-head {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 12px clamp(16px, 2vw, 22px);
+            border-bottom: 1px solid var(--line-soft);
+            background: linear-gradient(90deg, rgba(28, 151, 194, .08), rgba(43, 182, 196, .03));
+        }
+
+        .ex-app .card-head .dot {
+            width: 8px;
+            height: 21px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            flex-shrink: 0;
+        }
+
+        .ex-app .card-head h2 {
+            margin: 0;
+            font-size: clamp(15px, 1.7vw, 18px);
+            font-weight: 600;
+        }
+
+        .ex-app .card-body {
+            flex: 1;
+            min-height: 0;
+            padding: clamp(14px, 1.8vh, 20px) clamp(16px, 2vw, 22px);
+        }
+
+        /* grid */
+        .ex-app .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: clamp(9px, 1.2vw, 14px);
+        }
+
+        .ex-app .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            grid-column: span 4;
+            min-width: 0;
+        }
+
+        .ex-app .field.c6 {
+            grid-column: span 6;
+        }
+
+        .ex-app .field.c8 {
+            grid-column: span 8;
+        }
+
+        .ex-app .field.c12 {
+            grid-column: span 12;
+        }
+
+        .ex-app .field>label {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ex-app .control {
+            width: 100%;
+            height: var(--fh);
+            padding: 0 13px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: .15s;
+        }
+
+        .ex-app input.control::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app input.control:focus,
+        .ex-app select.control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        .ex-app select.control {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 34px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235d7886' stroke-width='1.7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 13px center;
+        }
+
+        .ex-app .display {
+            width: 100%;
+            min-height: var(--fh);
+            padding: 0 13px;
+            border: 1px solid var(--line-soft);
+            border-radius: var(--r-sm);
+            background: var(--field-bg);
+            color: var(--text);
+            font-size: 14.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ex-app .display:empty::before {
+            content: "—";
+            color: var(--muted-2);
+        }
+
+        .ex-app .display.strong {
+            font-weight: 500;
+        }
+
+        /* vitals */
+        .ex-app .vitalbox {
+            grid-column: span 6;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ex-app .vitalbox>label {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .ex-app .vital-inner {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            height: var(--fh);
+            padding: 0 8px 0 13px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: #fff;
+        }
+
+        .ex-app .vital-inner input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text);
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .ex-app .vital-inner .unit {
+            font-size: 12.5px;
+            color: var(--muted-2);
+            white-space: nowrap;
+            padding-right: 5px;
+        }
+
+        .ex-app .vital-inner .slash {
+            color: var(--muted-2);
+            font-weight: 500;
+        }
+
+        .ex-app .vital-inner:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        /* note card: body + textarea flex to fill */
+        .ex-app .card.note .card-body {
+            display: flex;
+        }
+
+        .ex-app textarea.control {
+            flex: 1;
+            height: auto;
+            min-height: 70px;
+            padding: 12px 13px;
+            line-height: 1.55;
+            resize: none;
+        }
+
+        .ex-app textarea.control::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        /* actions */
+        .ex-app .actions {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .ex-app .actions .btn {
+            min-width: 130px;
+            justify-content: center;
+        }
+
+        /* ═══════════ PORTRAIT / NARROW ═══════════ */
+        @media (max-width:900px) {
+
+            /* flatten the two columns so cards stack in one scroll-free column */
+            .ex-app #examForm {
+                flex-direction: column;
+                gap: clamp(11px, 1.4vh, 15px);
+            }
+
+            .ex-app .col {
+                display: contents;
+            }
+
+            .ex-app .card.fill {
+                flex: 0 0 auto;
+            }
+
+            /* general card sizes to content */
+            .ex-app .card.note {
+                flex: 1 1 auto;
+                min-height: 90px;
+            }
+
+            /* note takes the slack */
+            .ex-app .history .field {
+                grid-column: span 6;
+            }
+
+            /* history 2 per row */
+        }
+
+        @media (max-width:840px) {
+            .ex-app .search {
+                margin-left: 0;
+                max-width: none;
+                flex-basis: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width:560px) {
+            .ex-app .pagehead {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ex-app .field,
+            .ex-app .field.c6,
+            .ex-app .field.c8,
+            .ex-app .field.c12,
+            .ex-app .vitalbox,
+            .ex-app .history .field {
+                grid-column: span 12;
+            }
+
+            .ex-app .actions .btn {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+
+        .form-control {
+            max-height: 30px;
+            min-height: 30px;
+        }
+
+        .multi-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Sarabun';
+            resize: vertical;
+            /* อนุญาตให้ลากขยายความสูงได้ */
+            box-sizing: border-box;
+        }
+
+        .soft {
+            color: var(--primary-d);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ex-app">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <button class="nav-toggle" id="sidebarToggle" aria-label="เมนู"><i class="fa-solid fa-bars"></i></button>
+            <span class="nav-brand"><i class="fa-solid fa-notes-medical"></i> Health Station</span>
+            <a href="index2.html" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a>
+        </nav>
+
+        <div class="shell">
+
+            <!-- Page header -->
+            <div class="pagehead">
+                <div class="titlewrap">
+                    <div class="ticon"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div>
+                        <h1>ตรวจร่างกายทั่วไปโดยแพทย์</h1>
+                        <p class="sub">Doctor Consultation · บันทึกผลและความเห็นแพทย์</p>
+                    </div>
+                </div>
+                <div class="search">
+                    <div class="inwrap">
+                        <i class="fa-solid fa-barcode"></i>
+                        <input id="searchid" type="text" placeholder="สแกน / กรอกบาร์โค้ด…" />
+                    </div>
+                    <button type="button" class="btn primary" id="btnSearch" onclick="submitSearch(event)"><i
+                            class="fa-solid fa-magnifying-glass"></i> ค้นหา</button>
+
+                </div>
+            </div>
+
+            <div class="page-scroll">
+                <form class="card" id="healthForm">
+                    <div class="card-head fs-6 fw-bold">
+                        <h2>ข้อมูลทั่วไป</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="container">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="col-6 pe-2">
+                                    <label class="soft">รหัสลงทะเบียน</label>
+                                    <span id="Rn" name="Rn" class="form-control"></span>
+                                </div>
+
+                                <div class="col-6 ps-2">
+                                    <label class="soft">ชื่อ - นามสกุล</label>
+                                    <span id="fullname" name="fullname" class="form-control"></span>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div class="col-4 pe-2">
+                                    <label class="soft">อายุ (ปี)</label>
+                                    <span id="age" class="form-control"></span>
+                                </div>
+                                <div class="col-4 pe-2">
+                                    <label class="soft">เพศ</label>
+                                    <span id="sex" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">หมู่โลหิต</label>
+                                    <span id="bg" class="form-control"></span>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div class="col-4 pe-2">
+                                    <label class="soft">น้ำหนัก (กก.)</label>
+                                    <span id="weight" class="form-control"></span>
+                                </div>
+                                <div class="col-4 pe-2">
+                                    <label class="soft">ส่วนสูง (ซม.)</label>
+                                    <span id="height" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">รอบเอว (ซม.)</label>
+                                    <span id="waist" class="form-control"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" container mt-1" style="display: flex; justify-content: space-between;">
+                        <div class="input-group">
+                            <span class="input-group-text" style="max-height: 30px;">ความดันโลหิต</span>
+                            <span id="bp" class="form-control text-center bg-light"></span>
+                            <span class="input-group-text" style="max-height: 30px;">mmHg</span>
+                        </div>
+                        <div class="input-group ms-3">
+                            <span class="input-group-text" style="max-height: 30px;">การเต้นของชีพจร</span>
+                            <span id="paluse" class="form-control text-center bg-light"></span>
+                            <span class="input-group-text" style="max-height: 30px;">ครั้ง/นาที</span>
+                        </div>
+
+                    </div>
+
+
+                    <h1 class="fs-6 mt-1 ms-4">ประวัติสุขภาพ</h1>
+                    <div class="container">
+                        <div style="display: block;">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="soft">ประวัติการดื่มแอลกอฮอล์</label>
+                                    <span id="algohol" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">ประวัติการสูบบุหรี่</label>
+                                    <span id="siggarat" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">การทดสอบอาการแพ้</label>
+                                    <span id="allegy" class="form-control"></span>
+                                </div>
+                            </div>
+                            <div class="row mt-1 mb-2">
+                                <div class="col-4">
+                                    <label class="soft">โรคประจำตัว</label>
+                                    <span id="sick" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">ความเสี่ยงโรคทางพันธุกรรม</label>
+                                    <span id="family" class="form-control"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label class="soft">ประวัติการผ่าตัด</label>
+                                    <span id="operate" class="form-control"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-head">
+                        <h1 class="fs-6 fw-bold">ความเห็นแพทย์</h1>
+                    </div>
+                    <div class="container">
+
+                        <textarea id="dr" class="multi-input bg-light mt-2" rows="5"
+                            placeholder="พิมพ์รายละเอียด"></textarea>
+                    </div>
+
+                    <div class="actions mt-1 mb-2 me-3">
+                        <button type="reset" class="btn ghost">ล้างข้อมูล</button>
+                        <button type="button" id="add" class="btn primary" onclick="saveVitalSign()">บันทึก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====== CONFIG ======
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzS_CydBJq536FOEM2TTRbsGFQAzuDl71p-0UBFHaExfFhev-z3e3AgarJUzkyBPMEqEw/exec"; // ← วาง URL ของ Apps Script ที่นี่
+
+        // ====== SWEET ALERT HELPERS ======
+        function showLoading(title = "กำลังดำเนินการ...") {
+            Swal.fire({ title, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        }
+        function showSuccess(title, text) {
+            Swal.fire({ icon: 'success', title, text, timer: 2000, timerProgressBar: true, showConfirmButton: false });
+        }
+        function showError(text) {
+            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text });
+        }
+        function showWarning(text) {
+            Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text });
+        }
+
+        // ====== ENTER KEY ค้นหา ======
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("searchid").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") { e.preventDefault(); submitSearch(null); }
+            });
+        });
+
+        // ====== SEARCH (Google Sheets – sheet "VitalSign") ======
+        async function submitSearch(e) {
+            if (e) e.preventDefault();
+
+            const rawValue = document.getElementById("searchid")?.value ?? "";
+            if (!rawValue.trim()) return showWarning("กรุณากรอกรหัสบาร์โค้ด");
+
+            // ✂️ ตัด 2 ตัวแรกออกก่อนค้นหา
+            const trimmedId = rawValue.trim().slice(2);
+            if (!trimmedId) return showWarning("รหัสบาร์โค้ดสั้นเกินไป");
+
+            showLoading("กำลังค้นหา...");
+
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=search&id=${encodeURIComponent(trimmedId)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                Swal.close();
+
+                if (data.status === "found") {
+                    document.getElementById("Rn").textContent = data.id || "";
+                    document.getElementById("fullname").textContent = data.fullname || "";
+                    document.getElementById("age").textContent = data.age || "";
+                    document.getElementById("sex").textContent = data.sex || "";
+                    document.getElementById("bg").textContent = data.bg || "";
+                    document.getElementById("weight").textContent = data.waight || "";
+                    document.getElementById("height").textContent = data.heigth || "";
+                    document.getElementById("waist").textContent = data.size || "";
+
+                    document.getElementById("bp").textContent = data.bp || "";
+                    document.getElementById("paluse").textContent = data.paulse || "";
+                    document.getElementById("algohol").textContent = data.drint || "";
+                    document.getElementById("siggarat").textContent = data.smoke || "";
+                    document.getElementById("allegy").textContent = data.allegy || "";
+                    document.getElementById("sick").textContent = data.sick || "";
+                    document.getElementById("family").textContent = data.family || "";
+                    document.getElementById("operate").textContent = data.operate || "";
+                    // เคลียร์ช่องความเห็นแพทย์ทุกครั้งที่โหลดผู้ป่วยใหม่
+                    document.getElementById("dr").value = "";
+                } else {
+                    // เคลียร์ทุก field
+                    ["Rn", "fullname", "age", "sex", "bg", "weight", "height", "waist", "bp", "paluse",
+                        "algohol", "siggarat", "allegy", "sick", "family", "operate"].forEach(id => {
+                            document.getElementById(id).textContent = "";
+                        });
+                    document.getElementById("dr").value = "";
+                    showWarning("HN นี้ยังไม่ผ่านการซักประวัติสุขภาพ");
+                }
+            } catch (err) {
+                Swal.close();
+                showError("เชื่อมต่อ Google Sheets ไม่ได้: " + (err.message || ""));
+            }
+
+            document.getElementById("searchid").value = "";
+        }
+
+        // ====== SAVE (อัพเดทความเห็นแพทย์ คอลัมน์ G ใน VitalSign) ======
+        async function saveVitalSign() {
+            const hn = document.getElementById("Rn")?.textContent?.trim();
+            if (!hn) return showWarning("กรุณาค้นหาผู้ป่วยก่อนบันทึก");
+
+            const drNote = document.getElementById("dr")?.value?.trim();
+            if (!drNote) return showWarning("กรุณากรอกความเห็นแพทย์ก่อนบันทึก");
+
+            showLoading("กำลังบันทึก...");
+
+            try {
+                const payload = { action: "updateDrNote", hn, fullname: document.getElementById("fullname")?.textContent?.trim() || "", drNote };
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                Swal.close();
+
+                if (data.status === "ok") {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "บันทึกสำเร็จ",
+                        text: `บันทึกความเห็นแพทย์ของ HN ${hn} เรียบร้อยแล้ว`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                } else if (data.status === "notfound") {
+                    showWarning("ไม่พบ HN นี้ใน VitalSign กรุณาตรวจสอบอีกครั้ง");
+                } else {
+                    showError(data.message || "บันทึกไม่สำเร็จ");
+                }
+            } catch (err) {
+                Swal.close();
+                showError("เชื่อมต่อ Apps Script ไม่ได้: " + (err.message || ""));
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
