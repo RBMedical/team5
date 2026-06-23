@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ซักประวัติสุขภาพ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --bg: #eef6fb;
+            --card: #fff;
+            --line: #dbeaf2;
+            --line-soft: #eaf3f8;
+            --text: #15323f;
+            --muted: #5d7886;
+            --muted-2: #84a0ad;
+            --primary: #1c97c2;
+            --primary-d: #1582ab;
+            --primary-l: #eaf6fb;
+            --accent: #2bb6c4;
+            --field-bg: #f5fafd;
+            --shadow: 0 10px 30px rgba(21, 50, 63, .09);
+            --shadow-sm: 0 4px 12px rgba(21, 50, 63, .06);
+            --r: 14px;
+            --r-sm: 10px;
+            --fh: 44px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+              height: 100%;
+             overflow-y: scroll;
+        }
+
+        body {
+            font-family: "Kanit", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1000px 460px at 12% -8%, #d7ecf7, transparent 60%),
+                radial-gradient(1000px 480px at 100% 0%, #def0f8, transparent 55%),
+                var(--bg);
+        }
+
+        .ex-app {
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* navbar */
+        .ex-app .navbar {
+            flex: 0 0 auto;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 clamp(16px, 3vw, 28px);
+            background: rgba(255, 255, 255, .88);
+            backdrop-filter: saturate(140%) blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .ex-app .nav-toggle {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            background: var(--primary-l);
+            font-size: 17px;
+            transition: .15s;
+        }
+
+        .ex-app .nav-toggle:hover {
+            background: #dcf0f8;
+        }
+
+        .ex-app .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .ex-app .logout {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 14.5px;
+            transition: .15s;
+        }
+
+        .ex-app .logout:hover {
+            background: var(--primary-l);
+            color: var(--primary-d);
+        }
+
+        /* shell */
+        .ex-app .shell {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: clamp(12px, 1.8vh, 20px) clamp(14px, 3vw, 28px);
+        }
+
+        /* page head */
+        .ex-app .pagehead {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: clamp(10px, 1.6vh, 16px);
+        }
+
+        .ex-app .titlewrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .ex-app .ticon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 19px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 7px 16px rgba(28, 151, 194, .30);
+        }
+
+        .ex-app .pagehead h1 {
+            margin: 0;
+            font-size: clamp(18px, 2.2vw, 26px);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: .2px;
+        }
+
+        .ex-app .pagehead .sub {
+            margin: 1px 0 0;
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .ex-app .search {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex: 1 1 340px;
+            max-width: 540px;
+            justify-content: flex-end;
+        }
+
+        .ex-app .inwrap {
+            position: relative;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .ex-app .inwrap i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-2);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .ex-app .search input {
+            width: 100%;
+            height: var(--fh);
+            padding: 0 12px 0 36px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: .15s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ex-app .search input::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app .search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        .ex-app .btn {
+            height: var(--fh);
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 14.5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .ex-app .btn.primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            box-shadow: 0 8px 18px rgba(28, 151, 194, .26);
+        }
+
+        .ex-app .btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(28, 151, 194, .32);
+        }
+
+        .ex-app .btn.icon {
+            width: var(--fh);
+            padding: 0;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .ex-app .btn.ghost {
+            background: #fff;
+            border-color: var(--line);
+            color: var(--text);
+        }
+
+        .ex-app .btn.ghost:hover {
+            background: var(--primary-l);
+            border-color: var(--primary);
+            color: var(--primary-d);
+        }
+
+        /* form columns */
+        .ex-app #healthForm {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            gap: clamp(12px, 1.4vw, 18px);
+            overflow: hidden;
+        }
+
+        .ex-app .col {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(12px, 1.4vh, 16px);
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .ex-app .col-left {
+            flex: 1;
+        }
+
+        .ex-app .col-right {
+            flex: 1.28;
+        }
+
+        /* card */
+        .ex-app .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .ex-app .card.fill {
+            flex: 1;
+        }
+
+        .ex-app .card-head {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 12px clamp(16px, 2vw, 22px);
+            border-bottom: 1px solid var(--line-soft);
+            background: linear-gradient(90deg, rgba(28, 151, 194, .08), rgba(43, 182, 196, .03));
+        }
+
+        .ex-app .card-head .dot {
+            width: 8px;
+            height: 21px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            flex-shrink: 0;
+        }
+
+        .ex-app .card-head h2 {
+            margin: 0;
+            font-size: clamp(15px, 1.7vw, 18px);
+            font-weight: 600;
+        }
+
+        .ex-app .card-head .hint {
+            margin-left: auto;
+            font-size: 11.5px;
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app .card-body {
+            flex: 1;
+            min-height: 0;
+            padding: clamp(14px, 1.8vh, 20px) clamp(16px, 2vw, 22px);
+        }
+
+        /* field grid */
+        .ex-app .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: clamp(9px, 1.2vw, 14px);
+        }
+
+        .ex-app .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            grid-column: span 4;
+            min-width: 0;
+        }
+
+        .ex-app .field.c6 {
+            grid-column: span 6;
+        }
+
+        .ex-app .field>label {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ex-app .control {
+            width: 100%;
+            height: var(--fh);
+            padding: 0 13px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: .15s;
+        }
+
+        .ex-app input.control::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app input.control:focus,
+        .ex-app select.control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        .ex-app select.control {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 34px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235d7886' stroke-width='1.7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 13px center;
+        }
+
+        .ex-app .display {
+            width: 100%;
+            min-height: var(--fh);
+            padding: 0 13px;
+            border: 1px solid var(--line-soft);
+            border-radius: var(--r-sm);
+            background: var(--field-bg);
+            color: var(--text);
+            font-size: 14.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ex-app .display:empty::before {
+            content: "—";
+            color: var(--muted-2);
+        }
+
+        .ex-app .display.strong {
+            font-weight: 500;
+        }
+
+        /* vitals */
+        .ex-app .vitalbox {
+            grid-column: span 6;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ex-app .vitalbox>label {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .ex-app .vital-inner {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            height: var(--fh);
+            padding: 0 8px 0 13px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: #fff;
+        }
+
+        .ex-app .vital-inner input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text);
+            width: 100%;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .ex-app .vital-inner .unit {
+            font-size: 12.5px;
+            color: var(--muted-2);
+            white-space: nowrap;
+            padding-right: 5px;
+        }
+
+        .ex-app .vital-inner .slash {
+            color: var(--muted-2);
+            font-weight: 500;
+        }
+
+        .ex-app .vital-inner:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(28, 151, 194, .14);
+        }
+
+        /* questionnaire table */
+        .ex-app .qbody {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ex-app .qscroll {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+        }
+
+        .ex-app table.q {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .ex-app table.q thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            color: #fff;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .ex-app table.q thead th:first-child {
+            text-align: left;
+            padding-left: 14px;
+        }
+
+        .ex-app table.q tbody td {
+            padding: 9px 8px;
+            border-top: 1px solid var(--line-soft);
+            font-size: 13.5px;
+            vertical-align: middle;
+            background: #fff;
+        }
+
+        .ex-app table.q tbody tr:nth-child(even) td {
+            background: #f7fcfe;
+        }
+
+        .ex-app table.q tbody td.q-text {
+            padding-left: 14px;
+            color: #274856;
+            line-height: 1.35;
+        }
+
+        .ex-app table.q td.chk {
+            text-align: center;
+            width: 60px;
+        }
+
+        .ex-app table.q input[type=radio] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .ex-app .q-detail {
+            width: 100%;
+            height: 34px;
+            padding: 0 11px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: .15s;
+        }
+
+        .ex-app .q-detail::placeholder {
+            color: var(--muted-2);
+            font-weight: 300;
+        }
+
+        .ex-app .q-detail:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(28, 151, 194, .13);
+        }
+
+        .ex-app td.detail {
+            min-width: 150px;
+        }
+
+        /* actions */
+        .ex-app .actions {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .ex-app .actions .btn {
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        /* portrait / narrow */
+       @media (max-width: 600px) {
+            .ex-app #healthForm {
+                flex-direction: column;
+                gap: clamp(11px, 1.4vh, 15px);
+            }
+
+            .ex-app .col {
+                display: contents;
+            }
+
+            .ex-app .card.general {
+                flex: 0 0 auto;
+            }
+
+            .ex-app .card.quest {
+                flex: 1 1 auto;
+                min-height: 160px;
+            }
+        }
+
+        @media (max-width:840px) {
+            .ex-app .search {
+                margin-left: 0;
+                max-width: none;
+                flex-basis: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width:560px) {
+            .ex-app .pagehead {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ex-app .field,
+            .ex-app .field.c6,
+            .ex-app .vitalbox {
+                grid-column: span 12;
+            }
+
+            .ex-app .actions .btn {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .ex-app table.q td.detail {
+                min-width: 110px;
+            }
+
+            .ex-app table.q td.chk {
+                width: 46px;
+            }
+        }
+
+        #muscle {
+            max-height: 300px;
+        }
+
+        .form-control,
+        .display.strong,
+        .control,
+        .form-floating,
+        .input-group-text {
+            max-height: 30px;
+        }
+
+        #handProcess,
+        #legsProcess,
+        #backProcess {
+            max-height: 30px;
+            border-radius: 5px;
+        }
+
+        .input-group-text {
+            min-width: 100px;
+            color: #1582ab;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ex-app">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <button class="nav-toggle" id="sidebarToggle" aria-label="เมนู"><i class="fa-solid fa-bars"></i></button>
+            <span class="nav-brand"><i class="fa-solid fa-notes-medical"></i> Health Station</span>
+            <a href="index3.html" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a>
+        </nav>
+
+        <div class="shell">
+
+            <!-- Page header -->
+            <div class="pagehead">
+                <div class="titlewrap">
+                    <div class="ticon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div>
+                        <h1>ทดสอบสมรรถภาพกล้ามเนื้อ</h1>
+                        <p class="sub">Muscle-strength Test</p>
+                    </div>
+                </div>
+                <div class="search">
+                    <div class="inwrap">
+                        <i class="fa-solid fa-barcode"></i>
+                        <input id="searchid" type="text" placeholder="สแกน / กรอกบาร์โค้ด…" />
+                    </div>
+                    <button type="button" class="btn primary" id="btnSearch" onclick="submitSearch(event)">
+                        <i class="fa-solid fa-magnifying-glass"></i> ค้นหา
+                    </button>
+
+                </div>
+            </div>
+
+            <form id="healthForm">
+
+                <!-- LEFT: ข้อมูลทั่วไป -->
+                <div class="col col-left">
+                    <section id="muscle" class="card general fill">
+                        <div class="card-head"><span class="dot"></span>
+                            <h2>ข้อมูลกายภาพ</h2>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="grid">
+                                <div class="field c6"><label>รหัสลงทะเบียน</label>
+                                    <div class="display strong" id="Rn"></div>
+                                </div>
+                                <div class="field c6"><label>ชื่อ – นามสกุล</label>
+                                    <div class="display strong" id="fullname"></div>
+                                </div>
+                                <div class="field"><label>อายุ (ปี)</label>
+                                    <input class="control" id="age" name="age" type="number" min="0" />
+                                </div>
+                                <!-- ✅ Bug 7 แก้: เพิ่ม step="0.01" ให้ใส่ทศนิยมได้ -->
+                                <div class="field"><label>น้ำหนัก</label>
+                                    <input class="control" id="weight" name="weight" type="number" step="0.01"
+                                        min="0" />
+                                </div>
+                                <div class="field"><label>เพศ</label>
+                                    <select class="control" id="sex" name="sex">
+                                        <option value="" selected disabled>เลือก</option>
+                                        <option value="male">ชาย</option>
+                                        <option value="female">หญิง</option>
+                                        <option value="other">อื่น ๆ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- RIGHT: แบบสอบถาม + ปุ่ม -->
+                <div class="col col-right">
+                    <section class="card quest fill">
+                        <div class="card-body qbody">
+                            <div class="qscroll">
+
+                                <!-- ─── แรงบีบมือ ─────────────────────────────── -->
+                                <div class="container pt-2">
+                                    <h1 class="fs-6">แรงบีบมือ</h1>
+                                    <div style="display:flex;">
+                                        <div class="col-auto">
+                                            <div class="input-group">
+                                                <div class="input-group-text" style="font-size:0.80rem;">ค่าทดสอบ</div>
+                                                <!-- ✅ Bug 8 แก้: เพิ่ม type="number" step="0.01" -->
+                                                <input class="form-control text-end pe-5" id="h1" type="number"
+                                                    step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <!-- ✅ Bug 1 แก้: เพิ่ม type="button" ป้องกัน refresh -->
+                                            <button type="button" id="handProcess" onclick="handLevel()"
+                                                class="btn primary ms-1">ประมวลผล</button>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ค่าแปรผล</div>
+                                        <span class="form-control text-end pe-5" id="h2"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ผลตรวจ</div>
+                                        <span class="form-control text-end pe-5" id="h3"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ระดับ</div>
+                                        <span class="form-control text-end pe-5" id="h4"></span>
+                                    </div>
+                                </div>
+
+                                <!-- ─── แรงเหยียดหลัง ──────────────────────────── -->
+                                <div class="container pt-2">
+                                    <h1 class="fs-6">แรงเหยียดหลัง</h1>
+                                    <div style="display:flex;">
+                                        <div class="col-auto">
+                                            <div class="input-group">
+                                                <div class="input-group-text" style="font-size:0.80rem;">ค่าทดสอบ</div>
+                                                <!-- ✅ Bug 8 แก้: เพิ่ม type="number" step="0.01" -->
+                                                <input class="form-control text-end pe-5" id="b1" type="number"
+                                                    step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <!-- ✅ Bug 1 แก้: type="button" | Bug 2 แก้: backProcess() ไม่ใช่ legsLevel() -->
+                                            <button type="button" id="backProcess" onclick="backLevel()"
+                                                class="btn primary ms-1">ประมวลผล</button>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ค่าแปรผล</div>
+                                        <span class="form-control text-end pe-5" id="b2"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ผลตรวจ</div>
+                                        <span class="form-control text-end pe-5" id="b3"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ระดับ</div>
+                                        <span class="form-control text-end pe-5" id="b4"></span>
+                                    </div>
+                                </div>
+
+                                <!-- ─── แรงเหยียดขา ────────────────────────────── -->
+                                <div class="container pt-2">
+                                    <h1 class="fs-6">แรงเหยียดขา</h1>
+                                    <div style="display:flex;">
+                                        <div class="col-auto">
+                                            <div class="input-group">
+                                                <div class="input-group-text" style="font-size:0.80rem;">ค่าทดสอบ</div>
+                                                <!-- ✅ Bug 8 แก้: เพิ่ม type="number" step="0.01" -->
+                                                <input class="form-control text-end pe-5" id="l1" type="number"
+                                                    step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <!-- ✅ Bug 1 แก้: type="button" | Bug 3 แก้: legsLevel() ไม่ใช่ backProcess() -->
+                                            <button type="button" id="legsProcess" onclick="legsLevel()"
+                                                class="btn primary ms-1">ประมวลผล</button>
+                                        </div>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ค่าแปรผล</div>
+                                        <span class="form-control text-end pe-5" id="l2"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ผลตรวจ</div>
+                                        <span class="form-control text-end pe-5" id="l3"></span>
+                                    </div>
+                                    <div class="input-group mt-1">
+                                        <div class="input-group-text" style="font-size:0.80rem;">ระดับ</div>
+                                        <span class="form-control text-end pe-5" id="l4"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="actions">
+                        <button type="reset" class="btn ghost"><i class="fa-solid fa-eraser"></i> ล้างข้อมูล</button>
+                        <button type="button" onclick="saveVitalSign()" class="btn primary">
+                            <i class="fa-solid fa-floppy-disk"></i> บันทึก
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        function showLoading(title = "กำลังดำเนินการ...") {
+            Swal.fire({
+                title,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+        }
+
+        function showSuccess(title, text) {
+            Swal.fire({
+                icon: 'success',
+                title,
+                html: `<b>${text}</b>`,
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
+
+        function showError(text) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text
+            });
+        }
+
+        function showWarning(text) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'แจ้งเตือน',
+                text
+            });
+        }
+        // ======================================================
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpq6VOXeG62SX95UGS9USURZPnpYshRP_5rhNxP650IhegOwxFqgys307rwFGfsDs1vg/exec"; // ← วาง URL ของ Apps Script ที่นี่
+
+        // ====== ENTER KEY ค้นหา ======
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("searchid").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    submitSearch(null);
+                }
+            });
+        });
+        // ====== SEARCH (Google Sheets) ======
+        async function submitSearch(e) {
+            if (e) e.preventDefault();
+
+            const rawValue = document.getElementById("searchid")?.value ?? "";
+            if (!rawValue.trim()) return showWarning("กรุณากรอกรหัสบาร์โค้ด");
+
+            // ✂️ ตัด 2 ตัวแรกออกก่อนค้นหา
+            const trimmedId = rawValue.trim().slice(2);
+            if (!trimmedId) return showWarning("รหัสบาร์โค้ดสั้นเกินไป");
+
+            showLoading("กำลังค้นหา...");
+
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=search&id=${encodeURIComponent(trimmedId)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                Swal.close();
+
+                if (data.status === "found") {
+                    document.getElementById("Rn").textContent = data.id;
+                    document.getElementById("fullname").textContent = data.fullname;
+                } else {
+                    document.getElementById("Rn").textContent = "";
+                    document.getElementById("fullname").textContent = "";
+                    showWarning("ไม่พบรหัสลงทะเบียนนี้");
+                }
+            } catch (err) {
+                Swal.close();
+                showError("เชื่อมต่อ Google Sheets ไม่ได้: " + (err.message || ""));
+            }
+
+            document.getElementById("searchid").value = "";
+        }
+
+        async function saveVitalSign() {
+            // --- ตรวจสอบ HN และชื่อ ---
+            const hn = document.getElementById("Rn")?.textContent?.trim();
+            const fullname = document.getElementById("fullname")?.textContent?.trim();
+            if (!hn || !fullname) {
+                return showWarning("กรุณาค้นหาผู้ป่วยก่อนบันทึก");
+            }
+
+            // --- รวบรวมข้อมูล ---
+            const payload = {
+                action: "saveVital",
+                hn: hn,
+                fullname: fullname,
+                age: document.getElementById("age")?.value?.trim() || "",
+                sex: document.getElementById("sex")?.value || "",
+                weight: document.getElementById("weight")?.value || "",
+                h1: document.getElementById("h1")?.value?.trim() || "",
+                h2: document.getElementById("h2")?.textContent?.trim() || "",
+                h3: document.getElementById("h3")?.textContent?.trim() || "",
+                h4: document.getElementById("h4")?.textContent?.trim() || "",
+                l1: document.getElementById("l1")?.value?.trim() || "",
+                l2: document.getElementById("l2")?.textContent?.trim() || "",
+                l3: document.getElementById("l3")?.textContent?.trim() || "",
+                l4: document.getElementById("l4")?.textContent?.trim() || "",
+                b1: document.getElementById("b1")?.value?.trim() || "",
+                b2: document.getElementById("b2")?.textContent?.trim() || "",
+                b3: document.getElementById("b3")?.textContent?.trim() || "",
+                b4: document.getElementById("b4")?.textContent?.trim() || ""
+            };
+
+            showLoading("กำลังบันทึก...");
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                Swal.close();
+
+                if (data.status === "ok") {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "บันทึกสำเร็จ",
+                        text: `บันทึกข้อมูลของ ${fullname} เรียบร้อยแล้ว`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                    location.reload(); // รีเฟรชหน้า
+                } else {
+                    showError(data.message || "บันทึกไม่สำเร็จ");
+                }
+            } catch (err) {
+                Swal.close();
+                showError("เชื่อมต่อ Apps Script ไม่ได้: " + (err.message || ""));
+            }
+        }
+
+        // Helper: set value
+        function setValue(id, val) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            if (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
+                el.value = val;
+            } else {
+                el.textContent = val;
+            }
+        }
+
+        // ✅ เพิ่มใหม่: ตั้งสีแดงถ้าค่าเป็น ผิดปกติ / ต่ำ / ต่ำมาก
+        function setColor(id, val) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var bad = ['ผิดปกติ', 'ต่ำ', 'ต่ำมาก'];
+            if (bad.indexOf(val) !== -1) {
+                el.style.color = '#dc3545';
+                el.style.fontWeight = '600';
+            } else {
+                el.style.color = '';
+                el.style.fontWeight = '';
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        // แรงบีบมือ
+        // ════════════════════════════════════════════════════════
+        function handLevel() {
+            var weight = parseFloat(document.getElementById('weight').value);
+            var h1 = parseFloat(document.getElementById('h1').value);
+            var sex = document.getElementById('sex').value;
+            var age = parseInt(document.getElementById('age').value);
+
+            if (!weight || !h1 || !age || !sex) {
+                setValue('h2', '-');
+                setValue('h3', 'กรอกข้อมูลไม่ครบ'); setColor('h3', '');
+                setValue('h4', '-'); setColor('h4', '');
+                return;
+            }
+
+            setValue('weight', weight.toFixed(2));
+
+            var h2 = weight / h1;
+            setValue('h2', h2.toFixed(2));
+
+            var h3 = 'ปกติ';
+            if (sex === 'male') {
+                if (age >= 20 && age <= 29 && h2 < 0.55) h3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && h2 < 0.53) h3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && h2 < 0.50) h3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && h2 < 0.47) h3 = 'ผิดปกติ';
+                else if (age >= 60 && h2 < 0.43) h3 = 'ผิดปกติ';
+            } else if (sex === 'female') {
+                if (age >= 20 && age <= 29 && h2 < 0.38) h3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && h2 < 0.36) h3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && h2 < 0.34) h3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && h2 < 0.32) h3 = 'ผิดปกติ';
+                else if (age >= 60 && h2 < 0.30) h3 = 'ผิดปกติ';
+            }
+            setValue('h3', h3); setColor('h3', h3); // ✅ ใส่สี
+
+            var hCriteria = {
+                male: { '20-29': [0.70, 0.60, 0.50, 0.40], '30-39': [0.68, 0.58, 0.48, 0.38], '40-49': [0.65, 0.55, 0.45, 0.35], '50-59': [0.62, 0.52, 0.42, 0.32], '60+': [0.58, 0.48, 0.38, 0.28] },
+                female: { '20-29': [0.52, 0.42, 0.32, 0.22], '30-39': [0.50, 0.40, 0.30, 0.20], '40-49': [0.47, 0.37, 0.27, 0.17], '50-59': [0.44, 0.34, 0.24, 0.14], '60+': [0.40, 0.30, 0.20, 0.10] }
+            };
+            var ak = age >= 60 ? '60+' : age >= 50 ? '50-59' : age >= 40 ? '40-49' : age >= 30 ? '30-39' : '20-29';
+            var c = hCriteria[sex === 'male' ? 'male' : 'female'][ak];
+            var h4 = h2 >= c[0] ? 'สูงมาก' : h2 >= c[1] ? 'สูง' : h2 >= c[2] ? 'พอใช้' : h2 >= c[3] ? 'ต่ำ' : 'ต่ำมาก';
+            setValue('h4', h4); setColor('h4', h4); // ✅ ใส่สี
+        }
+
+        // ════════════════════════════════════════════════════════
+        // แรงเหยียดหลัง
+        // ════════════════════════════════════════════════════════
+        function backLevel() {
+            var weight = parseFloat(document.getElementById('weight').value);
+            var b1 = parseFloat(document.getElementById('b1').value);
+            var sex = document.getElementById('sex').value;
+            var age = parseInt(document.getElementById('age').value);
+
+            if (!weight || !b1 || !age || !sex) {
+                setValue('b2', '-');
+                setValue('b3', 'กรอกข้อมูลไม่ครบ'); setColor('b3', '');
+                setValue('b4', '-'); setColor('b4', '');
+                return;
+            }
+
+            setValue('weight', weight.toFixed(2));
+
+            var b2 = weight / b1;
+            setValue('b2', b2.toFixed(2));
+
+            var b3 = 'ปกติ';
+            if (sex === 'male') {
+                if (age >= 20 && age <= 29 && b2 < 1.80) b3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && b2 < 1.70) b3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && b2 < 1.50) b3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && b2 < 1.30) b3 = 'ผิดปกติ';
+                else if (age >= 60 && b2 < 1.00) b3 = 'ผิดปกติ';
+            } else if (sex === 'female') {
+                if (age >= 20 && age <= 29 && b2 < 1.40) b3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && b2 < 1.30) b3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && b2 < 1.20) b3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && b2 < 1.00) b3 = 'ผิดปกติ';
+                else if (age >= 60 && b2 < 0.80) b3 = 'ผิดปกติ';
+            }
+            setValue('b3', b3); setColor('b3', b3); // ✅ ใส่สี
+
+            var bCriteria = {
+                male: { '20-29': [2.80, 2.30, 1.80, 1.30], '30-39': [2.70, 2.20, 1.70, 1.20], '40-49': [2.50, 2.00, 1.50, 1.00], '50-59': [2.30, 1.80, 1.30, 0.90], '60+': [2.00, 1.50, 1.00, 0.70] },
+                female: { '20-29': [2.20, 1.80, 1.40, 1.00], '30-39': [2.10, 1.70, 1.30, 0.90], '40-49': [2.00, 1.60, 1.20, 0.80], '50-59': [1.80, 1.40, 1.00, 0.70], '60+': [1.60, 1.20, 0.80, 0.50] }
+            };
+            var ak = age >= 60 ? '60+' : age >= 50 ? '50-59' : age >= 40 ? '40-49' : age >= 30 ? '30-39' : '20-29';
+            var c = bCriteria[sex === 'male' ? 'male' : 'female'][ak];
+            var b4 = b2 >= c[0] ? 'สูงมาก' : b2 >= c[1] ? 'สูง' : b2 >= c[2] ? 'พอใช้' : b2 >= c[3] ? 'ต่ำ' : 'ต่ำมาก';
+            setValue('b4', b4); setColor('b4', b4); // ✅ ใส่สี
+        }
+
+        // ════════════════════════════════════════════════════════
+        // แรงเหยียดขา
+        // ════════════════════════════════════════════════════════
+        function legsLevel() {
+            var weight = parseFloat(document.getElementById('weight').value);
+            var l1 = parseFloat(document.getElementById('l1').value);
+            var sex = document.getElementById('sex').value;
+            var age = parseInt(document.getElementById('age').value);
+
+            if (!weight || !l1 || !age || !sex) {
+                setValue('l2', '-');
+                setValue('l3', 'กรอกข้อมูลไม่ครบ'); setColor('l3', '');
+                setValue('l4', '-'); setColor('l4', '');
+                return;
+            }
+
+            setValue('weight', weight.toFixed(2));
+
+            var l2 = weight / l1;
+            setValue('l2', l2.toFixed(2));
+
+            var l3 = 'ปกติ';
+            if (sex === 'male') {
+                if (age >= 20 && age <= 29 && l2 < 1.50) l3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && l2 < 1.40) l3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && l2 < 1.30) l3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && l2 < 1.10) l3 = 'ผิดปกติ';
+                else if (age >= 60 && l2 < 0.90) l3 = 'ผิดปกติ';
+            } else if (sex === 'female') {
+                if (age >= 20 && age <= 29 && l2 < 1.20) l3 = 'ผิดปกติ';
+                else if (age >= 30 && age <= 39 && l2 < 1.10) l3 = 'ผิดปกติ';
+                else if (age >= 40 && age <= 49 && l2 < 1.00) l3 = 'ผิดปกติ';
+                else if (age >= 50 && age <= 59 && l2 < 0.80) l3 = 'ผิดปกติ';
+                else if (age >= 60 && l2 < 0.60) l3 = 'ผิดปกติ';
+            }
+            setValue('l3', l3); setColor('l3', l3); // ✅ ใส่สี
+
+            var lCriteria = {
+                male: { '20-29': [2.50, 2.00, 1.50, 1.00], '30-39': [2.40, 1.90, 1.40, 0.90], '40-49': [2.30, 1.80, 1.30, 0.80], '50-59': [2.10, 1.60, 1.10, 0.70], '60+': [1.90, 1.40, 0.90, 0.60] },
+                female: { '20-29': [2.00, 1.60, 1.20, 0.80], '30-39': [1.90, 1.50, 1.10, 0.70], '40-49': [1.80, 1.40, 1.00, 0.60], '50-59': [1.60, 1.20, 0.80, 0.50], '60+': [1.40, 1.00, 0.60, 0.40] }
+            };
+            var ak = age >= 60 ? '60+' : age >= 50 ? '50-59' : age >= 40 ? '40-49' : age >= 30 ? '30-39' : '20-29';
+            var c = lCriteria[sex === 'male' ? 'male' : 'female'][ak];
+            var l4 = l2 >= c[0] ? 'สูงมาก' : l2 >= c[1] ? 'สูง' : l2 >= c[2] ? 'พอใช้' : l2 >= c[3] ? 'ต่ำ' : 'ต่ำมาก';
+            setValue('l4', l4); setColor('l4', l4); // ✅ ใส่สี
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

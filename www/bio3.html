@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ทดสอบทางชีวอนามัย · Health Station</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f0f5f8;
+            --surface: #ffffff;
+            --surface-2: #b5f2fd;
+            --border: #d6e2ea;
+            --border-soft: #e4edf2;
+            --text: #1a3040;
+            --text-2: #4d6878;
+            --text-3: #7a98a8;
+            --primary: #1582ab;
+            --primary-d: #10688a;
+            --primary-l: #e8f5fb;
+            --green: #2e7d32;
+            --green-l: #e8f5e9;
+            --green-b: #a5d6a7;
+            --red: #28c6ac;
+            --red-l: #ebfeff;
+            --red-b: #9aefa8;
+            --blue-l: #cfedf5;
+            --blue-b: #90caf9;
+            --blue-t: #0d47a1;
+            --r: 12px;
+            --r-sm: 8px;
+            --fh: 40px;
+            --shadow: 0 1px 3px rgba(0, 30, 50, .08), 0 4px 12px rgba(0, 30, 50, .06);
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.5;
+             height: 100%;
+            overflow-y: scroll;
+          }
+
+        /* ── Topbar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 28px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0, 30, 50, .06);
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            font-size: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: border-color .15s, color .15s, background .15s;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-l);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .icon-btn.logout:hover {
+            background: var(--red-l);
+            border-color: var(--red-b);
+            color: var(--red);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .topbar-date {
+            font-size: 13px;
+            color: var(--text-3);
+            padding-right: 12px;
+            border-right: 1px solid var(--border-soft);
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── Shell ── */
+        .shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 22px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* ── Page header ── */
+        .pagehead {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .page-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 21px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(21, 130, 171, .28);
+        }
+
+        .page-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .page-title p {
+            font-size: 12px;
+            color: var(--text-3);
+            margin-top: 2px;
+        }
+
+        .search-wrap {
+            margin-left: auto;
+            display: flex;
+            align-items: stretch;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            background: var(--surface);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .search-wrap .s-icon {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: var(--text-3);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .search-wrap input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            width: 220px;
+            padding: 0;
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--text-3);
+        }
+
+        .search-wrap .s-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 18px;
+            height: var(--fh);
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .15s;
+        }
+
+        .search-wrap .s-btn:hover {
+            background: var(--primary-d);
+        }
+
+        /* ── Patient card ── */
+        .pt-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 14px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .pt-av {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .pt-info h2 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .pt-info p {
+            font-size: 12px;
+            color: var(--text-2);
+            margin-top: 3px;
+        }
+
+        .pt-fields {
+            display: flex;
+            gap: 0;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .pt-f {
+            padding: 0 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            border-right: 1px solid var(--border-soft);
+        }
+
+        .pt-f:first-child {
+            padding-left: 0;
+        }
+
+        .pt-f:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .pt-fl {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--text-3);
+            font-weight: 500;
+        }
+
+        .pt-fv {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .pt-fv.hn {
+            color: var(--primary);
+            font-family: 'sarabun', monospace;
+            font-size: 13px;
+        }
+
+        .badge {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-green {
+            background: var(--green-l);
+            color: var(--green);
+            border: 1px solid var(--green-b);
+        }
+
+        .badge-blue {
+            background: var(--blue-l);
+            color: var(--blue-t);
+            border: 1px solid var(--blue-b);
+        }
+
+        /* ── Section card ── */
+        .sec {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 20px;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .sec-bar {
+            width: 3px;
+            height: 20px;
+            border-radius: 3px;
+            background: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .sec-head i {
+            font-size: 17px;
+            color: var(--primary);
+        }
+
+        .sec-head h2 {
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        .sec-head h2 span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-3);
+            margin-left: 4px;
+        }
+
+        .sec-head .sec-action {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--green-l);
+            color: var(--green);
+            border: 1px solid var(--green-b);
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .sec-head .sec-actions {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+                                
+            cursor: pointer;
+            font-family: inherit;
+            
+        }
+
+
+        .sec-head .sec-action:hover {
+            background: #d0edce;
+        }
+
+        .sec-body {
+            padding: 18px 20px;
+        }
+
+        /* ── Ear labels ── */
+        .ear-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px 3px 7px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 9px;
+        }
+
+        .ear-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .ear-r {
+            background: var(--red-l);
+            color: var(--red);
+            border: 1px solid var(--red-b);
+        }
+
+        .ear-r .ear-dot {
+            background: #1be4b8;
+        }
+
+        .ear-l {
+            background: var(--blue-l);
+            color: var(--blue-t);
+            border: 1px solid var(--blue-b);
+        }
+
+        .ear-l .ear-dot {
+            background: #1e88e5;
+        }
+
+        /* ── Frequency grid ── */
+        .freq-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .freq-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .freq-lbl {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-3);
+            background: var(--surface-2);
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            padding: 3px 0;
+        }
+
+        .freq-inp {
+            width: 100%;
+            height: 40px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-sm);
+            text-align: center;
+            font-family: inherit;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: var(--text);
+            background: var(--surface);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .freq-inp::placeholder {
+            color: #bdd2db;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .freq-inp:hover {
+            border-color: #9bbdcc;
+        }
+
+        .freq-inp:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 130, 171, .14);
+        }
+
+        .freq-inp.ear-r-inp:focus {
+            border-color: #35e5e5;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, .12);
+        }
+
+        .freq-inp.ear-l-inp:focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, .12);
+        }
+
+        /* ── Spirometry ── */
+        .spiro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .sp-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sp-lbl {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-3);
+            letter-spacing: .2px;
+        }
+
+        .sp-inp {
+            width: 100%;
+            height: 42px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-sm);
+            text-align: center;
+            font-family: inherit;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: var(--text);
+            background: var(--surface);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .sp-inp::placeholder {
+            color: #bdd2db;
+            font-size: 13px;
+        }
+
+        .sp-inp:hover {
+            border-color: #9bbdcc;
+        }
+
+        .sp-inp:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 130, 171, .14);
+        }
+
+        .sp-inp[readonly] {
+            background: var(--surface-2);
+            cursor: default;
+        }
+
+        .sp-inp[readonly]:hover {
+            border-color: var(--border);
+        }
+
+        .sp-inp[readonly]:focus {
+            border-color: var(--border);
+            box-shadow: none;
+        }
+
+        .sp-inp.ok {
+            background: #f0faf2;
+            border-color: #66bb6a;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .sp-inp.bad {
+            background: #fff5f5;
+            border-color: #ef9a9a;
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .sp-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sp-calc-btn {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-sm);
+            background: var(--surface-2);
+            color: var(--primary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+        }
+
+        .sp-calc-btn:hover {
+            background: var(--primary-l);
+            border-color: var(--primary);
+        }
+
+        /* ── Actions bar ── */
+        .actions-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .conn-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .conn-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #43a047;
+            flex-shrink: 0;
+        }
+
+        .act-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn {
+            height: var(--fh);
+            padding: 0 20px;
+            border-radius: var(--r-sm);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background .15s, border-color .15s, transform .1s;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface-2);
+            border-color: #aac4d0;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(21, 130, 171, .24);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-d);
+            border-color: var(--primary-d);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .search-wrap {
+                flex: 1 1 100%;
+                order: 3;
+            }
+
+            .pagehead {
+                row-gap: 10px;
+            }
+
+            .spiro-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .spiro-grid .sp-field:nth-child(4),
+            .spiro-grid .sp-field:nth-child(5) {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .shell {
+                padding: 14px 16px;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .freq-grid {
+                gap: 5px;
+            }
+
+            .freq-lbl {
+                font-size: 10px;
+            }
+
+            .freq-inp {
+                height: 36px;
+                font-size: 13px;
+            }
+
+            .pt-fields {
+                display: none;
+            }
+
+            .spiro-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .spiro-grid .sp-field:last-child {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <button class="icon-btn" aria-label="เมนู">
+            <i class="ti ti-menu-2"></i>
+        </button>
+        <a href="#" class="brand">
+            <div class="brand-mark"><i class="ti ti-activity-heartbeat"></i></div>
+            Health Station
+        </a>
+        <div class="topbar-right">
+            <span class="topbar-date">
+                <i class="ti ti-calendar" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+                <span id="today-date"></span>
+            </span>
+            <button class="icon-btn logout" aria-label="ออกจากระบบ" onclick="confirmLogout()">
+                <i class="ti ti-logout"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="shell">
+
+        <!-- Page header -->
+        <div class="pagehead">
+            <div class="page-icon"><i class="ti ti-clipboard-list"></i></div>
+            <div class="page-title">
+                <h1>ทดสอบทางชีวอนามัย</h1>
+                <p>Biological health screening · ห้องตรวจ A</p>
+            </div>
+            <div class="search-wrap">
+                <span class="s-icon"><i class="ti ti-barcode"></i></span>
+                <input id="searchid" type="text" placeholder="สแกนหรือกรอกบาร์โค้ด…" autocomplete="off" />
+                <button class="s-btn" onclick="submitSearch()">
+                    <i class="ti ti-search"></i> ค้นหา
+                </button>
+            </div>
+        </div>
+
+        <!-- Patient card -->
+        <div class="pt-card">
+            <div class="pt-av" id="pt-av">—</div>
+            <div class="pt-info">
+                <h2 id="fullname" style="color:#7a98a8;font-weight:400">ค้นหาผู้รับการตรวจ</h2>
+                <p id="pt-sub">กรอกหรือสแกนบาร์โค้ดเพื่อดึงข้อมูล</p>
+            </div>
+            <div class="pt-fields">
+                <div class="pt-f">
+                    <span class="pt-fl">รหัสลงทะเบียน</span>
+                    <span class="pt-fv hn" id="Rn">—</span>
+                </div>
+                <div class="pt-f">
+                    <span class="pt-fl">วันที่ตรวจ</span>
+                    <span class="pt-fv" id="exam-date">—</span>
+                </div>
+            </div>
+            <span class="badge badge-green" id="pt-badge" style="display:none">
+                <i class="ti ti-circle-check" style="font-size:14px"></i> พบผู้รับการตรวจ
+            </span>
+        </div>
+
+        <!-- Audiogram -->
+        <section class="sec">
+             <div class="sec-head">
+                <span class="sec-bar"></span>
+                <i class="ti ti-ear"></i>
+                <h2>การได้ยิน <span>Audiogram</span></h2>
+              <div class="sec-actions">
+                 <svg type="button" onclick="clearForm()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        fill="#9bbdcc" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+                    </svg>
+
+                    <svg type="button" onclick="saveVitalSign()" xmlns="http://www.w3.org/2000/svg" width="20"
+                        height="20" fill="#10688a" class="bi bi-floppy2-fill" viewBox="0 0 16 16">
+                        <path d="M12 2h-2v3h2z" />
+                        <path
+                            d="M1.5 0A1.5 1.5 0 0 0 0 1.5v13A1.5 1.5 0 0 0 1.5 16h13a1.5 1.5 0 0 0 1.5-1.5V2.914a1.5 1.5 0 0 0-.44-1.06L14.147.439A1.5 1.5 0 0 0 13.086 0zM4 6a1 1 0 0 1-1-1V1h10v4a1 1 0 0 1-1 1zM3 9h10a1 1 0 0 1 1 1v5H2v-5a1 1 0 0 1 1-1" />
+                    </svg>
+                    </div>
+            </div>
+            <div class="sec-body">
+
+                <!-- Right ear -->
+                <div class="ear-tag ear-r">
+                    <span class="ear-dot"></span> R · หูขวา
+                </div>
+                <div class="freq-grid" id="grid-r">
+                    <div class="freq-cell">
+                        <div class="freq-lbl">500 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r05" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">1000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r10" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">2000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r20" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">3000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r30" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">4000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r40" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">6000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r60" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">8000 Hz</div>
+                        <input class="freq-inp ear-r-inp" id="r80" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                </div>
+
+                <!-- Left ear -->
+                <div class="ear-tag ear-l">
+                    <span class="ear-dot"></span> L · หูซ้าย
+                </div>
+                <div class="freq-grid" style="margin-bottom:0">
+                    <div class="freq-cell">
+                        <div class="freq-lbl">500 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l05" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">1000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l10" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">2000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l20" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">3000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l30" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">4000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l40" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">6000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l60" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                    <div class="freq-cell">
+                        <div class="freq-lbl">8000 Hz</div>
+                        <input class="freq-inp ear-l-inp" id="l80" type="text" placeholder="dB" maxlength="4" />
+                    </div>
+                </div>
+
+            </div>
+            
+            </div>
+        </section>
+
+        <!-- Spirometry -->
+        <section class="sec">
+            <div class="sec-head">
+                <span class="sec-bar"></span>
+                <i class="ti ti-lungs"></i>
+                <h2>สมรรถภาพปอด <span>Spirometry</span></h2>
+                <button class="sec-action" onclick="evaluateLungFunction()">
+                    <i class="ti ti-calculator" style="font-size:13px"></i> ประมวลผลอัตโนมัติ
+                </button>
+                 <svg type="button" onclick="clearForm()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        fill="#9bbdcc" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+                    </svg>
+
+                    <svg type="button" onclick="saveSpirometer()" xmlns="http://www.w3.org/2000/svg" width="20"
+                        height="20" fill="#10688a" class="bi bi-floppy2-fill" viewBox="0 0 16 16">
+                        <path d="M12 2h-2v3h2z" />
+                        <path
+                            d="M1.5 0A1.5 1.5 0 0 0 0 1.5v13A1.5 1.5 0 0 0 1.5 16h13a1.5 1.5 0 0 0 1.5-1.5V2.914a1.5 1.5 0 0 0-.44-1.06L14.147.439A1.5 1.5 0 0 0 13.086 0zM4 6a1 1 0 0 1-1-1V1h10v4a1 1 0 0 1-1 1zM3 9h10a1 1 0 0 1 1 1v5H2v-5a1 1 0 0 1 1-1" />
+                    </svg>
+            </div>
+            <div class="sec-body">
+                <div class="spiro-grid">
+                    <div class="sp-field">
+                        <div class="sp-lbl">FVC (%pred)</div>
+                        <input class="sp-inp" id="fvc" type="text" placeholder="0.00" />
+                    </div>
+                    <div class="sp-field">
+                        <div class="sp-lbl">FEV1 (%pred)</div>
+                        <input class="sp-inp" id="fev" type="text" placeholder="0.00" />
+                    </div>
+                    <div class="sp-field">
+                        <div class="sp-lbl">FEV1/FVC (%)</div>
+                        <input class="sp-inp" id="fevc" type="text" placeholder="0.00" />
+                    </div>
+                    <div class="sp-field">
+                        <div class="sp-lbl">ผลการประเมิน</div>
+                        <input class="sp-inp" id="result" type="text" read only>
+                    </div>
+                    <div class="sp-field">
+                        <div class="sp-lbl">สรุปผล</div>
+                        <div class="sp-row">
+                            <input class="sp-inp" id="description" type="text"
+                                style="flex:1" read only>
+                            <button class="sp-calc-btn" onclick="evaluateLungFunction()" aria-label="คำนวณ">
+                                <i class="ti ti-calculator"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+  </div>
+               
+           
+        </section>
+
+        <!-- Actions bar -->
+        <div class="actions-bar">
+            <div class="conn-status">
+                <span class="conn-dot"></span>
+                เชื่อมต่อฐานข้อมูล · บันทึกล่าสุด <span id="last-save">—</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        function hideSpirometry() {
+            document.getElementById("audio").style.display = "none";
+            document.getElementById("lung").style.display = "flex";
+        }
+        function showLoading(title = "กำลังดำเนินการ...") {
+            Swal.fire({
+                title,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+        }
+
+        function showSuccess(title, text) {
+            Swal.fire({
+                icon: 'success',
+                title,
+                html: `<b>${text}</b>`,
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
+
+        function showError(text) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text
+            });
+        }
+
+        function showWarning(text) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'แจ้งเตือน',
+                text
+            });
+        }
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiLymVlAo480E51mMeREta1qzj7fOD9sN4MQauOH4Yxkk_7vVmMlvXU_ZxLq_AzR-iAA/exec";
+
+        /* ── Date ── */
+        (function () {
+            const d = new Date();
+            const be = d.getFullYear() + 543;
+            const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const str = `${d.getDate()} ${months[d.getMonth()]} ${be}`;
+            document.getElementById('today-date').textContent = str;
+            document.getElementById('exam-date').textContent = str;
+        })();
+
+        /* ── Keyboard Enter on search ── */
+        document.getElementById('searchid').addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); submitSearch(); }
+        });
+
+        /* ── SweetAlert helpers ── */
+        const swalLoad = (t = 'กำลังดำเนินการ…') =>
+            Swal.fire({ title: t, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        const swalOk = (title, text) => Swal.fire({
+            icon: 'success', title, html: `<b>${text}</b>`,
+            timer: 2000, timerProgressBar: true, showConfirmButton: false
+        });
+
+        const swalErr = t => Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: t });
+        const swalWarn = t => Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: t });
+
+        /* ── Search ── */
+        async function submitSearch() {
+            const raw = document.getElementById('searchid').value.trim();
+            if (!raw) return swalWarn('กรุณากรอกรหัสบาร์โค้ด');
+            const id = raw.slice(2);
+            if (!id) return swalWarn('รหัสบาร์โค้ดสั้นเกินไป');
+
+            swalLoad('กำลังค้นหา…');
+            try {
+                const res = await fetch(`${APPS_SCRIPT_URL}?action=search&id=${encodeURIComponent(id)}`);
+                const data = await res.json();
+                Swal.close();
+                if (data.status === 'found') {
+                    setPatient(data.id, data.fullname);
+                } else {
+                    clearPatient();
+                    swalWarn('ไม่พบรหัสลงทะเบียนนี้');
+                }
+            } catch (err) {
+                Swal.close();
+                swalErr('เชื่อมต่อฐานข้อมูลไม่ได้: ' + (err.message || ''));
+            }
+            document.getElementById('searchid').value = '';
+        }
+
+        function setPatient(id, name) {
+            document.getElementById('Rn').textContent = id;
+            document.getElementById('fullname').textContent = name;
+            document.getElementById('fullname').style.color = '';
+            document.getElementById('fullname').style.fontWeight = '';
+            document.getElementById('pt-sub').textContent = 'แผนกผลิต · อายุ 38 ปี';
+            document.getElementById('pt-av').textContent = name.charAt(name.length > 1 ? 2 : 0) || 'ป';
+            document.getElementById('pt-badge').style.display = '';
+        }
+
+        function clearPatient() {
+            document.getElementById('Rn').textContent = '—';
+            document.getElementById('fullname').textContent = 'ค้นหาผู้รับการตรวจ';
+            document.getElementById('fullname').style.color = '#7a98a8';
+            document.getElementById('fullname').style.fontWeight = '400';
+            document.getElementById('pt-sub').textContent = 'กรอกหรือสแกนบาร์โค้ดเพื่อดึงข้อมูล';
+            document.getElementById('pt-av').textContent = '—';
+            document.getElementById('pt-badge').style.display = 'none';
+        }
+
+        /* ── Spirometry evaluate ── */
+        function evaluateLungFunction() {
+            const fvc = parseFloat(document.getElementById('fvc').value) || 0;
+            const fevc = parseFloat(document.getElementById('fevc').value) || 0;
+
+            let result = '', desc = '', cls = '';
+            if (fvc >= 80 && fevc >= 70) {
+                result = 'ปกติ'; desc = 'ควรออกกำลังกายสม่ำเสมอ'; cls = 'ok';
+            } else if (fvc >= 80 && fevc < 70) {
+                result = 'ผิดปกติ'; desc = 'พบลักษณะการอุดกั้นของทางเดินหายใจ'; cls = 'bad';
+            } else if (fvc < 80 && fevc >= 70) {
+                result = 'ผิดปกติ'; desc = 'พบลักษณะการจำกัดการขยายตัวของปอด'; cls = 'bad';
+            } else {
+                result = 'ผิดปกติ'; desc = 'พบความผิดปกติของสมรรถภาพปอดแบบผสม'; cls = 'bad';
+            }
+
+            const rEl = document.getElementById('result');
+            const dEl = document.getElementById('description');
+            rEl.value= result; rEl.className = `sp-inp ${cls}`;
+            dEl.value = desc; dEl.className = `sp-inp ${cls}`;
+        }
+
+        /* ── Save ── */
+        async function saveVitalSign() {
+            const hn = document.getElementById('Rn').textContent.trim();
+            const fullname = document.getElementById('fullname').textContent.trim();
+
+            const payload = {
+                action: 'saveaudio',
+                hn: hn,
+                fullname: fullname,
+                r05: document.getElementById("r05")?.value?.trim() || "",
+                r10: document.getElementById("r10")?.value || "",
+                r20: document.getElementById("r20")?.value || "",
+                r30: document.getElementById("r30")?.value?.trim() || "",
+                r40: document.getElementById("r40")?.value?.trim() || "",
+                r60: document.getElementById("r60")?.value?.trim() || "",
+                r80: document.getElementById("r80")?.value?.trim() || "",
+                l05: document.getElementById("l05")?.value?.trim() || "",
+                l10: document.getElementById("l10")?.value || "",
+                l20: document.getElementById("l20")?.value || "",
+                l30: document.getElementById("l30")?.value?.trim() || "",
+                l40: document.getElementById("l40")?.value?.trim() || "",
+                l60: document.getElementById("l60")?.value?.trim() || "",
+                l80: document.getElementById("l80")?.value?.trim() || "",
+
+            };
+            console.log(payload);
+            swalLoad('กำลังบันทึก…');
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                Swal.close();
+                if (data.status === 'ok') {
+                    const now = new Date();
+                    document.getElementById('last-save').textContent =
+                        `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
+                    await swalOk('บันทึกสำเร็จ', `บันทึกข้อมูลของ ${fullname} เรียบร้อยแล้ว`);
+                    clearForm();
+                } else {
+                    swalErr(data.message || 'บันทึกไม่สำเร็จ');
+                }
+            } catch (err) {
+                Swal.close();
+                swalErr('เชื่อมต่อฐานข้อมูลไม่ได้: ' + (err.message || ''));
+            }
+        }
+
+        async function saveSpirometer() {
+            const hn = document.getElementById('Rn').textContent.trim();
+            const fullname = document.getElementById('fullname').textContent.trim();
+
+
+            const g = id => document.getElementById(id)?.value?.trim() || '';
+            const s = id => document.getElementById(id)?.textContent?.trim() || '';
+            const payload = {
+                action: 'savespirometer',
+                hn: hn,
+                fullname: fullname,
+                fev:  document.getElementById('fev')?.value?.trim() || '',
+                fvc:  document.getElementById('fvc')?.value?.trim() || '',
+                fevc:  document.getElementById('fevc')?.value?.trim() ||'',
+                result:  document.getElementById('result')?.value?.trim() ||'',
+                description:  document.getElementById('description')?.value?.trim() ||''
+            }; 
+            console.log(payload);
+
+            swalLoad('กำลังบันทึก…');
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                Swal.close();
+                if (data.status === 'ok') {
+                    const now = new Date();
+                    document.getElementById('last-save').textContent =
+                        `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
+                    await swalOk('บันทึกสำเร็จ', `บันทึกข้อมูลของ ${fullname} เรียบร้อยแล้ว`);
+                    clearForm();
+                } else {
+                    swalErr(data.message || 'บันทึกไม่สำเร็จ');
+                }
+            } catch (err) {
+                Swal.close();
+                swalErr('เชื่อมต่อฐานข้อมูลไม่ได้: ' + (err.message || ''));
+            }
+        }
+
+
+        /* ── Clear ── */
+        function clearForm() {
+            document.querySelectorAll('.freq-inp, .sp-inp:not([readonly])').forEach(el => el.value = '');
+            ['result', 'description'].forEach(id => {
+                const el = document.getElementById(id);
+                el.value = ''; el.className = 'sp-inp';
+            });
+            clearPatient();
+        }
+
+        /* ── Logout ── */
+        function confirmLogout() {
+            Swal.fire({
+                icon: 'question', title: 'ออกจากระบบ?',
+                text: 'ข้อมูลที่ยังไม่ได้บันทึกจะหายไป',
+                showCancelButton: true,
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#c62828'
+            }).then(r => { if (r.isConfirmed) window.location.href = 'index3.html'; });
+        }
+    </script>
+
+</body>
+
+</html>

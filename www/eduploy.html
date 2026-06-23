@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+
+<style>
+
+html,
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+}
+
+body{
+    background:url("css/ADD.png");
+    background-size:100% 100%;
+    background-repeat:no-repeat;
+    background-position:center;
+}
+
+/* พื้นที่สำหรับวาง MultiControl */
+
+#MultiControl{
+
+    position:absolute;
+
+    left:25.4%;
+    top:55.8%;
+
+    width:49.6%;
+    height:30.5%;
+
+    overflow:auto;
+
+    box-sizing:border-box;
+
+    
+   
+
+    }
+ #dr{
+        width: 80%;
+        height: 50%;
+        justify-content: center;
+        padding-left: 50px;
+        margin-left: 80px;
+        margin-right: 50px;
+ }
+
+ input{
+    justify-content: center;
+ }
+
+ textarea{
+     text-align: center;
+ }
+
+ textarea.focus{
+     text-align: left;
+ }
+.multi-input {
+    text-align: center;   /* ทำให้ placeholder อยู่กลาง */
+    background-color: #e9edf3;
+}
+
+/* ตอน focus: ให้พิมพ์ชิดซ้าย */
+.multi-input:focus {
+    text-align: left;
+   background-color: #e9edf3;
+     outline: none !important;
+    box-shadow: none !important;
+    }
+
+/* ซ่อน placeholder ตอน focus */
+.multi-input:focus::placeholder {
+    color: transparent;
+}
+
+ #dr{
+    text-align:center;
+    border: none;
+   
+    
+
+}
+
+#dr.has-value{
+    text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<div id="MultiControl">
+   
+     <textarea id="dr" class="multi-input bg-light mt-2 fs-1 fw-bold" rows="5"
+                            placeholder="พิมพ์คำศัพท์ที่ต้องการตรวจ"></textarea>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+  <button class="btn btn-success me-md-5 mt-2 " type="button" onclick="changeBackground()">ตรวจศัพท์</button>
+  <script>
+ function changeBackground() {
+    document.body.style.backgroundImage = `url('css/abb.png')`;
+   
+    }
+    </script>
+
+</div>
+
+</div>
+<script>
+
+    const txt = document.getElementById("dr");
+
+txt.addEventListener("focus", function () {
+    this.style.textAlign = "left";
+});
+
+txt.addEventListener("blur", function () {
+
+    if (this.value.trim() === "") {
+        this.style.textAlign = "center";
+    } else {
+        this.style.textAlign = "left";
+    }
+
+});
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+</body>
+</html>
